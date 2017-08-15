@@ -28,7 +28,6 @@ func NewReporter() reporters.Reporter {
 }
 
 type Gotcha struct {
-	color   bool
 	prefix  bool
 	current int
 	levels  map[int][]string
@@ -187,12 +186,7 @@ func (g *Gotcha) printSummary(summary *types.SuiteSummary, fn colorFunc) {
 		out = append(out, g.renderStatPartial("pending", summary.NumberOfPendingSpecs, false))
 	}
 
-	line := strings.Join(out, ", ")
-	if g.color {
-		fn(line)
-	} else {
-		fmt.Println(line)
-	}
+	fn(strings.Join(out, ", "))
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
