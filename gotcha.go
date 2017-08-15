@@ -23,27 +23,24 @@ func RunSpecs(t ginkgo.GinkgoTestingT, description string) bool {
 }
 
 func NewReporter() reporters.Reporter {
-	stenographer := NewGotcha(config.DefaultReporterConfig)
-	return reporters.NewDefaultReporter(config.DefaultReporterConfig, stenographer)
+	gotcha := NewGotcha(config.DefaultReporterConfig)
+	return reporters.NewDefaultReporter(config.DefaultReporterConfig, gotcha)
 }
 
 type Gotcha struct {
-	prefix  bool
-	current int
-	levels  map[int][]string
+	prefix bool
+	levels map[int][]string
 }
 
 func NewGotcha(cfg config.DefaultReporterConfigType) *Gotcha {
-	prefix := false
+	gotcha := &Gotcha{
+		levels: make(map[int][]string),
+	}
 	if cfg.NoColor {
 		color.NoColor = true
-		prefix = true
+		gotcha.prefix = true
 	}
-
-	return &Gotcha{
-		levels: make(map[int][]string),
-		prefix: prefix,
-	}
+	return gotcha
 }
 
 func (g *Gotcha) AnnounceSuite(description string, randomSeed int64, randomizingAll bool, quiet bool) {
@@ -82,8 +79,7 @@ func (g *Gotcha) AnnounceSpecFailed(spec *types.SpecSummary, quiet bool, fullTra
 
 func (g *Gotcha) AnnounceSpecRunCompletion(summary *types.SuiteSummary, quiet bool) {
 	fmt.Println()
-	fmt.Println(fmt.Sprintf("Finished in %.4f seconds", summary.RunTime.Seconds()))
-
+	fmt.Printf("Finished in %.4f seconds\n", summary.RunTime.Seconds())
 	var fn colorFunc
 	if summary.NumberOfFailedSpecs > 0 {
 		fn = color.Red
@@ -93,7 +89,6 @@ func (g *Gotcha) AnnounceSpecRunCompletion(summary *types.SuiteSummary, quiet bo
 		fn = color.Yellow
 	}
 	g.printSummary(summary, fn)
-
 	fmt.Println()
 }
 
@@ -178,14 +173,14 @@ func (g *Gotcha) renderStatPartial(s string, n int, pluralize bool) string {
 }
 
 func (g *Gotcha) printSummary(summary *types.SuiteSummary, fn colorFunc) {
-	var out []string
-	out = append(out, g.renderStatPartial("example", summary.NumberOfTotalSpecs, true))
-	out = append(out, g.renderStatPartial("failure", summary.NumberOfFailedSpecs, true))
-
-	if summary.NumberOfPendingSpecs > 0 {
-		out = append(out, g.renderStatPartial("pending", summary.NumberOfPendingSpecs, false))
+	out := []string{
+		g.renderStatPartial("example", summary.NumberOfTotalSpecs, true),
+		g.renderStatPartial("failure", summary.NumberOfFailedSpecs, true),
+		"",
 	}
-
+	if summary.NumberOfPendingSpecs > 0 {
+		out[2] = g.renderStatPartial("pending", summary.NumberOfPendingSpecs, false)
+	}
 	fn(strings.Join(out, ", "))
 }
 
