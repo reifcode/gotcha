@@ -29,9 +29,15 @@ type Gotcha struct {
 }
 
 func NewGotcha(cfg config.DefaultReporterConfigType) *Gotcha {
-	color.NoColor = cfg.NoColor
+	prefix := false
+	if cfg.NoColor {
+		color.NoColor = true
+		prefix = true
+	}
+
 	return &Gotcha{
 		levels: make(map[int][]string),
+		prefix: prefix,
 	}
 }
 
