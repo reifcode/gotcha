@@ -11,6 +11,12 @@ import (
 	"github.com/onsi/ginkgo/types"
 )
 
+const (
+	prefixOK      = "[OK] "
+	prefixFail    = "[FAIL] "
+	prefixPending = "[PENDING] "
+)
+
 func RunSpecs(t ginkgo.GinkgoTestingT, description string) bool {
 	reporters := []ginkgo.Reporter{NewReporter()}
 	return ginkgo.RunSpecsWithCustomReporters(t, description, reporters)
@@ -48,31 +54,31 @@ func (g *Gotcha) AnnounceSuite(description string, randomSeed int64, randomizing
 }
 
 func (g *Gotcha) AnnounceSuccesfulSpec(spec *types.SpecSummary) {
-	g.printSingleSpec(spec, "[OK] ", color.Green)
+	g.printSingleSpec(spec, prefixOK, color.Green)
 }
 
 func (g *Gotcha) AnnounceSuccesfulSlowSpec(spec *types.SpecSummary, quiet bool) {
-	g.printSingleSpec(spec, "[OK] ", color.Green)
+	g.printSingleSpec(spec, prefixOK, color.Green)
 }
 
 func (g *Gotcha) AnnounceSuccesfulMeasurement(spec *types.SpecSummary, quiet bool) {
-	g.printSingleSpec(spec, "[OK] ", color.Green)
+	g.printSingleSpec(spec, prefixOK, color.Green)
 }
 
 func (g *Gotcha) AnnouncePendingSpec(spec *types.SpecSummary, verbose bool) {
-	g.printSingleSpec(spec, "[PENDING] ", color.Yellow)
+	g.printSingleSpec(spec, prefixPending, color.Yellow)
 }
 
 func (g *Gotcha) AnnounceSpecTimedOut(spec *types.SpecSummary, quiet bool, fullTrace bool) {
-	g.printSingleSpec(spec, "[FAIL] ", color.Red)
+	g.printSingleSpec(spec, prefixFail, color.Red)
 }
 
 func (g *Gotcha) AnnounceSpecPanicked(spec *types.SpecSummary, quiet bool, fullTrace bool) {
-	g.printSingleSpec(spec, "[FAIL] ", color.Red)
+	g.printSingleSpec(spec, prefixFail, color.Red)
 }
 
 func (g *Gotcha) AnnounceSpecFailed(spec *types.SpecSummary, quiet bool, fullTrace bool) {
-	g.printSingleSpec(spec, "[FAIL] ", color.Red)
+	g.printSingleSpec(spec, prefixFail, color.Red)
 }
 
 func (g *Gotcha) AnnounceSpecRunCompletion(summary *types.SuiteSummary, quiet bool) {
