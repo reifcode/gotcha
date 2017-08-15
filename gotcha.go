@@ -5,9 +5,21 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/config"
+	"github.com/onsi/ginkgo/reporters"
 	"github.com/onsi/ginkgo/types"
 )
+
+func RunSpecs(t ginkgo.GinkgoTestingT, description string) bool {
+	reporters := []ginkgo.Reporter{NewReporter()}
+	return ginkgo.RunSpecsWithCustomReporters(t, description, reporters)
+}
+
+func NewReporter() reporters.Reporter {
+	stenographer := NewGotcha(config.DefaultReporterConfig)
+	return reporters.NewDefaultReporter(config.DefaultReporterConfig, stenographer)
+}
 
 type Gotcha struct {
 	color   bool
@@ -17,21 +29,13 @@ type Gotcha struct {
 }
 
 func NewGotcha(cfg config.DefaultReporterConfigType) *Gotcha {
+	color.NoColor = cfg.NoColor
 	return &Gotcha{
-		color:  !cfg.NoColor,
 		levels: make(map[int][]string),
 	}
 }
 
 type colorFunc func(string, ...interface{})
-
-func (g *Gotcha) println(s string, fn colorFunc) {
-	if g.color {
-		fmt.Println(s)
-	} else {
-		fn(s)
-	}
-}
 
 func (g *Gotcha) printSingleSpec(spec *types.SpecSummary, prefix string, fn colorFunc) {
 	size := len(spec.ComponentTexts[1:]) - 1
@@ -46,7 +50,7 @@ func (g *Gotcha) printSingleSpec(spec *types.SpecSummary, prefix string, fn colo
 		}
 		if i > len(level) || !found {
 			g.levels[i] = append(level, component)
-			spaces := strings.Repeat("  ", i+1)
+			spaces := strings.Repeat("  ", i)
 			if i == size {
 				if g.prefix {
 					fn(fmt.Sprintf("%s%s%s", spaces, prefix, component))
@@ -85,7 +89,9 @@ func (g *Gotcha) printSummary(summary *types.SuiteSummary, fn colorFunc) {
 }
 
 func (g *Gotcha) AnnounceSuite(description string, randomSeed int64, randomizingAll bool, quiet bool) {
+	fmt.Println()
 	fmt.Println(description)
+	fmt.Println()
 }
 
 func (g *Gotcha) AnnounceSpecRunCompletion(summary *types.SuiteSummary, quiet bool) {
@@ -147,7 +153,7 @@ func (g *Gotcha) SummarizeFailures(summaries []*types.SpecSummary) {
 
 		for i, failed := range failures {
 			failure := failed.Failure
-			fmt.Println(fmt.Sprintf("  %d) %s", i+1, strings.Join(failed.ComponentTexts[1:], " ")))
+			fmt.Printf("  %d) %s\n", i+1, strings.Join(failed.ComponentTexts[1:], " "))
 			lines := strings.Split(failure.Message, "\n")
 			for i := range lines {
 				lines[i] = fmt.Sprintf("     %s", lines[i])
