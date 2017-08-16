@@ -1,9 +1,6 @@
 package gotcha
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/fatih/color"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/config"
@@ -27,69 +24,78 @@ func NewReporter() reporters.Reporter {
 	return reporters.NewDefaultReporter(config.DefaultReporterConfig, gotcha)
 }
 
+type Reporter interface {
+	AnnounceSuite(description string)
+	PrintSingleSpec(spec *types.SpecSummary, prefix string, fn ColorFunc)
+	PrintSummary(spec *types.SuiteSummary, fn ColorFunc)
+	SummarizeFailures(failures []*types.SpecSummary, pendings []*types.SpecSummary)
+}
+
+type ColorFunc func(string, ...interface{}) string
+
 type Gotcha struct {
-	prefix bool
-	levels map[int][]string
+	prefix   bool
+	verbose  bool
+	reporter Reporter
 }
 
 func NewGotcha(cfg config.DefaultReporterConfigType) *Gotcha {
-	gotcha := &Gotcha{
-		levels: make(map[int][]string),
-	}
 	if cfg.NoColor {
 		color.NoColor = true
-		gotcha.prefix = true
 	}
+
+	gotcha := &Gotcha{}
+	if cfg.Verbose {
+		gotcha.reporter = newVerboseReporter(cfg.NoColor)
+	} else {
+		gotcha.reporter = &silentReporter{}
+	}
+
 	return gotcha
 }
 
 func (g *Gotcha) AnnounceSuite(description string, randomSeed int64, randomizingAll bool, quiet bool) {
-	fmt.Println()
-	fmt.Println(description)
-	fmt.Println()
+	g.reporter.AnnounceSuite(description)
 }
 
 func (g *Gotcha) AnnounceSuccesfulSpec(spec *types.SpecSummary) {
-	g.printSingleSpec(spec, prefixOK, color.Green)
+	g.reporter.PrintSingleSpec(spec, prefixOK, color.GreenString)
 }
 
 func (g *Gotcha) AnnounceSuccesfulSlowSpec(spec *types.SpecSummary, quiet bool) {
-	g.printSingleSpec(spec, prefixOK, color.Green)
+	g.reporter.PrintSingleSpec(spec, prefixOK, color.GreenString)
 }
 
 func (g *Gotcha) AnnounceSuccesfulMeasurement(spec *types.SpecSummary, quiet bool) {
-	g.printSingleSpec(spec, prefixOK, color.Green)
+	g.reporter.PrintSingleSpec(spec, prefixOK, color.GreenString)
 }
 
 func (g *Gotcha) AnnouncePendingSpec(spec *types.SpecSummary, verbose bool) {
-	g.printSingleSpec(spec, prefixPending, color.Yellow)
+	g.reporter.PrintSingleSpec(spec, prefixPending, color.YellowString)
 }
 
 func (g *Gotcha) AnnounceSpecTimedOut(spec *types.SpecSummary, quiet bool, fullTrace bool) {
-	g.printSingleSpec(spec, prefixFail, color.Red)
+	g.reporter.PrintSingleSpec(spec, prefixFail, color.RedString)
 }
 
 func (g *Gotcha) AnnounceSpecPanicked(spec *types.SpecSummary, quiet bool, fullTrace bool) {
-	g.printSingleSpec(spec, prefixFail, color.Red)
+	g.reporter.PrintSingleSpec(spec, prefixFail, color.RedString)
 }
 
 func (g *Gotcha) AnnounceSpecFailed(spec *types.SpecSummary, quiet bool, fullTrace bool) {
-	g.printSingleSpec(spec, prefixFail, color.Red)
+	g.reporter.PrintSingleSpec(spec, prefixFail, color.RedString)
 }
 
 func (g *Gotcha) AnnounceSpecRunCompletion(summary *types.SuiteSummary, quiet bool) {
-	fmt.Println()
-	fmt.Printf("Finished in %.4f seconds\n", summary.RunTime.Seconds())
-	var fn colorFunc
+	var fn ColorFunc
 	if summary.NumberOfFailedSpecs > 0 {
-		fn = color.Red
+		fn = color.RedString
 	} else if summary.NumberOfPassedSpecs == summary.NumberOfTotalSpecs {
-		fn = color.Green
+		fn = color.GreenString
 	} else {
-		fn = color.Yellow
+		fn = color.YellowString
 	}
-	g.printSummary(summary, fn)
-	fmt.Println()
+	g.reporter.PrintSummary(summary, fn)
 }
 
 func (g *Gotcha) SummarizeFailures(summaries []*types.SpecSummary) {
@@ -99,23 +105,6 @@ func (g *Gotcha) SummarizeFailures(summaries []*types.SpecSummary) {
 			failures = append(failures, summaries[i])
 		}
 	}
-	if len(failures) > 0 {
-		fmt.Println()
-		fmt.Println("Failures:")
-		fmt.Println()
-
-		for i, failed := range failures {
-			failure := failed.Failure
-			fmt.Printf("  %d) %s\n", i+1, strings.Join(failed.ComponentTexts[1:], " "))
-			lines := strings.Split(failure.Message, "\n")
-			for i := range lines {
-				lines[i] = fmt.Sprintf("     %s", lines[i])
-			}
-			color.Red(strings.Join(lines, "\n"))
-			color.Cyan(fmt.Sprintf("     %s", failure.Location.String()))
-			fmt.Println()
-		}
-	}
 
 	var pendings []*types.SpecSummary
 	for i := range summaries {
@@ -123,65 +112,8 @@ func (g *Gotcha) SummarizeFailures(summaries []*types.SpecSummary) {
 			pendings = append(pendings, summaries[i])
 		}
 	}
-	if len(pendings) > 0 {
-		fmt.Println()
-		fmt.Println("Pending:")
-		fmt.Println()
 
-		for i, pending := range pendings {
-			fmt.Println(fmt.Sprintf("  %d) %s", i+1, strings.Join(pending.ComponentTexts[1:], " ")))
-			loc := pending.ComponentCodeLocations[len(pending.ComponentCodeLocations)-1]
-			color.Cyan(fmt.Sprintf("     %s", loc))
-		}
-	}
-}
-
-type colorFunc func(string, ...interface{})
-
-func (g *Gotcha) printSingleSpec(spec *types.SpecSummary, prefix string, fn colorFunc) {
-	size := len(spec.ComponentTexts[1:]) - 1
-	for i, component := range spec.ComponentTexts[1:] {
-		level := g.levels[i]
-		found := false
-		for _, c := range level {
-			if component == c {
-				found = true
-				break
-			}
-		}
-		if i > len(level) || !found {
-			g.levels[i] = append(level, component)
-			spaces := strings.Repeat("  ", i)
-			if i == size {
-				if g.prefix {
-					fn(fmt.Sprintf("%s%s%s", spaces, prefix, component))
-				} else {
-					fn(fmt.Sprintf("%s%s", spaces, component))
-				}
-			} else {
-				fmt.Println(fmt.Sprintf("%s%s", spaces, component))
-			}
-		}
-	}
-}
-
-func (g *Gotcha) renderStatPartial(s string, n int, pluralize bool) string {
-	if pluralize && n != 1 {
-		s += "s"
-	}
-	return fmt.Sprintf("%d %s", n, s)
-}
-
-func (g *Gotcha) printSummary(summary *types.SuiteSummary, fn colorFunc) {
-	out := []string{
-		g.renderStatPartial("example", summary.NumberOfTotalSpecs, true),
-		g.renderStatPartial("failure", summary.NumberOfFailedSpecs, true),
-		"",
-	}
-	if summary.NumberOfPendingSpecs > 0 {
-		out[2] = g.renderStatPartial("pending", summary.NumberOfPendingSpecs, false)
-	}
-	fn(strings.Join(out, ", "))
+	g.reporter.SummarizeFailures(failures, pendings)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
