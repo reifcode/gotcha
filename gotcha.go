@@ -41,10 +41,10 @@ type Gotcha struct {
 
 func NewGotcha(cfg config.DefaultReporterConfigType) *Gotcha {
 	gotcha := &Gotcha{}
-	if cfg.Verbose {
-		gotcha.reporter = newVerboseReporter(cfg.NoColor)
-	} else {
+	if cfg.Succinct {
 		gotcha.reporter = newSilentReporter()
+	} else {
+		gotcha.reporter = newVerboseReporter(cfg.NoColor)
 	}
 	color.NoColor = cfg.NoColor
 	return gotcha
