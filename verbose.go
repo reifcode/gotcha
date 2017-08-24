@@ -9,14 +9,14 @@ import (
 )
 
 type verboseReporter struct {
-	levels     map[int][]string
+	levels     map[string][]string
 	prefix     bool
 	summarizer summarizer
 }
 
 func newVerboseReporter(prefix bool) *verboseReporter {
 	return &verboseReporter{
-		levels:     make(map[int][]string),
+		levels:     make(map[string][]string),
 		prefix:     prefix,
 		summarizer: summarizer{},
 	}
@@ -30,17 +30,20 @@ func (r verboseReporter) AnnounceSuite(description string) {
 
 func (r verboseReporter) PrintSingleSpec(spec *types.SpecSummary, prefix string, fn ColorFunc) {
 	size := len(spec.ComponentTexts[1:]) - 1
+	fullComponent := ""
 	for i, component := range spec.ComponentTexts[1:] {
-		level := r.levels[i]
+		fullComponent += "." + component
+		level := r.levels[fullComponent]
 		found := false
-		for _, c := range level {
-			if component == c {
+		lower := strings.ToLower(component)
+		for j := range level {
+			if lower == level[j] {
 				found = true
 				break
 			}
 		}
-		if i > len(level) || !found {
-			r.levels[i] = append(level, component)
+		if !found {
+			r.levels[fullComponent] = append(level, lower)
 			spaces := strings.Repeat("  ", i+1)
 			if i == size {
 				if r.prefix {
