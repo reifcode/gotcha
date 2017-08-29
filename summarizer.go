@@ -49,6 +49,7 @@ func (s summarizer) printFailures(failures []*types.SpecSummary, pendings []*typ
 			color.Cyan(fmt.Sprintf("     %s", failure.Location.String()))
 			if failure.ForwardedPanic != "" {
 				color.Magenta(fmt.Sprintf("     %s", failure.ForwardedPanic))
+				color.Magenta(fmt.Sprintf("     %s", failure.Location.FullStackTrace))
 			}
 			fmt.Println()
 		}
