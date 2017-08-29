@@ -47,6 +47,9 @@ func (s summarizer) printFailures(failures []*types.SpecSummary, pendings []*typ
 			}
 			color.Red(strings.Join(lines, "\n"))
 			color.Cyan(fmt.Sprintf("     %s", failure.Location.String()))
+			if failure.ForwardedPanic != "" {
+				color.Yellow(fmt.Sprintf("     %s", failure.ForwardedPanic))
+			}
 			fmt.Println()
 		}
 		fmt.Println()
