@@ -21,7 +21,7 @@
 
 [[projects]]
   name = "github.com/onsi/ginkgo"
-  packages = ["config","internal/codelocation","internal/containernode","internal/failer","internal/leafnodes","internal/remote","internal/spec","internal/spec_iterator","internal/specrunner","internal/suite","internal/testingtproxy","internal/writer","reporters","reporters/stenographer","reporters/stenographer/support/go-colorable","reporters/stenographer/support/go-isatty","types"]
+  packages = [".","config","internal/codelocation","internal/containernode","internal/failer","internal/leafnodes","internal/remote","internal/spec","internal/spec_iterator","internal/specrunner","internal/suite","internal/testingtproxy","internal/writer","reporters","reporters/stenographer","reporters/stenographer/support/go-colorable","reporters/stenographer/support/go-isatty","types"]
   revision = "9eda700730cba42af70d53180f9dcce9266bc2bc"
   version = "v1.4.0"
 
@@ -30,12 +30,6 @@
   packages = [".","format","internal/assertion","internal/asyncassertion","internal/oraclematcher","internal/testingtsupport","matchers","matchers/support/goraph/bipartitegraph","matchers/support/goraph/edge","matchers/support/goraph/node","matchers/support/goraph/util","types"]
   revision = "c893efa28eb45626cdaa76c9f653b62488858837"
   version = "v1.2.0"
-
-[[projects]]
-  name = "github.com/onsi/ginkgo"
-  packages = [".","config","reporters","types"]
-  revision = "9eda700730cba42af70d53180f9dcce9266bc2bc"
-  version = "v1.4.0"
 
 [[projects]]
   branch = "master"
@@ -64,6 +58,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "346c7b9ba7b43a101e03004ffde0ee2473ae60d50fceacf0e3bf6df94ca31bb6"
+  inputs-digest = "87ce96967dcd1034fdb51d4fdf35adcd8d9226f8580f7d775e5e9ec1079e2bc4"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -10,7 +10,7 @@ import (
 
 type summarizer struct{}
 
-func (s summarizer) printSummary(summary *types.SuiteSummary, fn ColorFunc) {
+func (s summarizer) printSummary(summary *types.SuiteSummary, skipped int, fn ColorFunc) {
 	fmt.Println()
 	fmt.Printf("Finished in %.4f seconds\n", summary.RunTime.Seconds())
 
@@ -20,6 +20,9 @@ func (s summarizer) printSummary(summary *types.SuiteSummary, fn ColorFunc) {
 	}
 	if summary.NumberOfPendingSpecs > 0 {
 		out = append(out, s.renderPartial("pending", summary.NumberOfPendingSpecs, false))
+	}
+	if skipped > 0 {
+		out = append(out, s.renderPartial("skipped", skipped, false))
 	}
 
 	fmt.Println(fn(strings.Join(out, ", ")))

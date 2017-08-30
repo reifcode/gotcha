@@ -29,6 +29,7 @@ type Reporter interface {
 	PrintSingleSpec(spec *types.SpecSummary, prefix string, fn ColorFunc)
 	PrintSummary(spec *types.SuiteSummary, fn ColorFunc)
 	SummarizeFailures(failures []*types.SpecSummary, pendings []*types.SpecSummary)
+	Skip(spec *types.SpecSummary)
 }
 
 type ColorFunc func(string, ...interface{}) string
@@ -112,6 +113,10 @@ func (g *Gotcha) SummarizeFailures(summaries []*types.SpecSummary) {
 	g.reporter.SummarizeFailures(failures, pendings)
 }
 
+func (g *Gotcha) AnnounceSkippedSpec(spec *types.SpecSummary, quiet bool, fullTrace bool) {
+	g.reporter.Skip(spec)
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func (g *Gotcha) AnnounceAggregatedParallelRun(nodes int, quiet bool) {
@@ -131,10 +136,6 @@ func (g *Gotcha) AnnounceTotalNumberOfSpecs(specs int, quiet bool) {
 }
 
 func (g *Gotcha) AnnounceSpecWillRun(spec *types.SpecSummary) {
-	// nothing
-}
-
-func (g *Gotcha) AnnounceSkippedSpec(spec *types.SpecSummary, quiet bool, fullTrace bool) {
 	// nothing
 }
 

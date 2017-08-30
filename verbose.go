@@ -3,6 +3,7 @@ package gotcha
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/fatih/color"
 	"github.com/onsi/ginkgo/types"
@@ -11,7 +12,9 @@ import (
 type verboseReporter struct {
 	levels     map[string][]string
 	prefix     bool
+	skipped    int
 	summarizer summarizer
+	mu         *sync.Mutex
 }
 
 func newVerboseReporter(prefix bool) *verboseReporter {
@@ -19,16 +22,17 @@ func newVerboseReporter(prefix bool) *verboseReporter {
 		levels:     make(map[string][]string),
 		prefix:     prefix,
 		summarizer: summarizer{},
+		mu:         &sync.Mutex{},
 	}
 }
 
-func (r verboseReporter) AnnounceSuite(description string) {
+func (r *verboseReporter) AnnounceSuite(description string) {
 	fmt.Println()
 	color.New().Add(color.Bold).Println(description)
 	fmt.Println()
 }
 
-func (r verboseReporter) PrintSingleSpec(spec *types.SpecSummary, prefix string, fn ColorFunc) {
+func (r *verboseReporter) PrintSingleSpec(spec *types.SpecSummary, prefix string, fn ColorFunc) {
 	size := len(spec.ComponentTexts[1:]) - 1
 	fullComponent := ""
 	for i, component := range spec.ComponentTexts[1:] {
@@ -58,10 +62,16 @@ func (r verboseReporter) PrintSingleSpec(spec *types.SpecSummary, prefix string,
 	}
 }
 
-func (r verboseReporter) PrintSummary(summary *types.SuiteSummary, fn ColorFunc) {
-	r.summarizer.printSummary(summary, fn)
+func (r *verboseReporter) PrintSummary(summary *types.SuiteSummary, fn ColorFunc) {
+	r.summarizer.printSummary(summary, r.skipped, fn)
 }
 
-func (r verboseReporter) SummarizeFailures(failures []*types.SpecSummary, pendings []*types.SpecSummary) {
+func (r *verboseReporter) SummarizeFailures(failures []*types.SpecSummary, pendings []*types.SpecSummary) {
 	r.summarizer.printFailures(failures, pendings)
+}
+
+func (r *verboseReporter) Skip(*types.SpecSummary) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.skipped++
 }

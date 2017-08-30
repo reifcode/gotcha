@@ -35,10 +35,14 @@ func (r *silentReporter) PrintSingleSpec(spec *types.SpecSummary, prefix string,
 }
 
 func (r *silentReporter) PrintSummary(spec *types.SuiteSummary, fn ColorFunc) {
-	r.summarizer.printSummary(spec, fn)
+	r.summarizer.printSummary(spec, 0, fn)
 }
 
 func (r *silentReporter) SummarizeFailures(failures []*types.SpecSummary, pendings []*types.SpecSummary) {
 	fmt.Println()
 	r.summarizer.printFailures(failures, pendings)
+}
+
+func (r *silentReporter) Skip(*types.SpecSummary) {
+	// do nothing
 }
