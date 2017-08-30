@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/onsi/ginkgo/types"
+	"github.com/reifcode/ginkgo/types"
 )
 
 type summarizer struct{}

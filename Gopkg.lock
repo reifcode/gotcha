@@ -21,7 +21,7 @@
 
 [[projects]]
   name = "github.com/onsi/ginkgo"
-  packages = [".","config","internal/codelocation","internal/containernode","internal/failer","internal/leafnodes","internal/remote","internal/spec","internal/spec_iterator","internal/specrunner","internal/suite","internal/testingtproxy","internal/writer","reporters","reporters/stenographer","reporters/stenographer/support/go-colorable","reporters/stenographer/support/go-isatty","types"]
+  packages = ["config","internal/codelocation","internal/containernode","internal/failer","internal/leafnodes","internal/remote","internal/spec","internal/spec_iterator","internal/specrunner","internal/suite","internal/testingtproxy","internal/writer","reporters","reporters/stenographer","reporters/stenographer/support/go-colorable","reporters/stenographer/support/go-isatty","types"]
   revision = "9eda700730cba42af70d53180f9dcce9266bc2bc"
   version = "v1.4.0"
 
@@ -32,22 +32,28 @@
   version = "v1.2.0"
 
 [[projects]]
+  name = "github.com/reifcode/ginkgo"
+  packages = [".","config","reporters","types"]
+  revision = "9eda700730cba42af70d53180f9dcce9266bc2bc"
+  version = "v1.4.0"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["html","html/atom","html/charset"]
-  revision = "1c05540f6879653db88113bc4a2b70aec4bd491f"
+  revision = "66aacef3dd8a676686c7ae3716979581e8b03c47"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "9f7170bcd8e9f4d3691c06401119c46a769a1e03"
+  revision = "ab9e364efd8b52800ff7ee48a9ffba4e0ed78dfb"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
   packages = ["encoding","encoding/charmap","encoding/htmlindex","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","encoding/unicode","internal/gen","internal/tag","internal/utf8internal","language","runes","transform","unicode/cldr"]
-  revision = "e56139fd9c5bc7244c76116c68e500765bb6db6b"
+  revision = "18c65dde6afd36dbc39197ca72008895b8dfbfb6"
 
 [[projects]]
   branch = "v2"
@@ -58,6 +64,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5f70b498e2b557d5a80e93d4fc47a6bb15eb21a5e388ee608ccb9584185b3fbf"
+  inputs-digest = "c6aec9a4c2ba5f0668ea1ae32cd1841df1b528b26c0888fe15996a35ef4cc4f6"
   solver-name = "gps-cdcl"
   solver-version = 1

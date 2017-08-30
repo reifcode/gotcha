@@ -6,7 +6,7 @@ Gotcha is an RSpec-like [ginkgo](https://github.com/onsi/ginkgo) reporter.
 import (
     "testing"
 
-    . "github.com/onsi/ginkgo"
+    . "github.com/reifcode/ginkgo"
     . "github.com/onsi/gomega"
     "github.com/reifcode/gotcha"
 )

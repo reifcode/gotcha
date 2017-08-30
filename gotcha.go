@@ -2,10 +2,10 @@ package gotcha
 
 import (
 	"github.com/fatih/color"
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/config"
-	"github.com/onsi/ginkgo/reporters"
-	"github.com/onsi/ginkgo/types"
+	"github.com/reifcode/ginkgo"
+	"github.com/reifcode/ginkgo/config"
+	"github.com/reifcode/ginkgo/reporters"
+	"github.com/reifcode/ginkgo/types"
 )
 
 const (
