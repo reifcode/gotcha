@@ -32,7 +32,7 @@
   version = "v1.2.0"
 
 [[projects]]
-  name = "github.com/reifcode/ginkgo"
+  name = "github.com/onsi/ginkgo"
   packages = [".","config","reporters","types"]
   revision = "9eda700730cba42af70d53180f9dcce9266bc2bc"
   version = "v1.4.0"
@@ -64,6 +64,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c6aec9a4c2ba5f0668ea1ae32cd1841df1b528b26c0888fe15996a35ef4cc4f6"
+  inputs-digest = "346c7b9ba7b43a101e03004ffde0ee2473ae60d50fceacf0e3bf6df94ca31bb6"
   solver-name = "gps-cdcl"
   solver-version = 1
