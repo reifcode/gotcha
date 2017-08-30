@@ -42,7 +42,7 @@ type Gotcha struct {
 
 func NewGotcha(cfg config.DefaultReporterConfigType) *Gotcha {
 	gotcha := &Gotcha{}
-	if cfg.Succinct {
+	if cfg.Succinct && !cfg.FullTrace {
 		gotcha.reporter = newSilentReporter()
 	} else {
 		gotcha.reporter = newVerboseReporter(cfg.NoColor)
