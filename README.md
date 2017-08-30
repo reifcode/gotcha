@@ -1,6 +1,6 @@
 # Gotcha
 
-Gotcha is an RSpec-like [ginkgo](https://github.com/onsi/ginkgo) reporter.
+Gotcha is an RSpec-like [ginkgo](https://github.com/reifcode/ginkgo) reporter.
 
 ```
 import (
