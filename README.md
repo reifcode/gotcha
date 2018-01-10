@@ -8,7 +8,7 @@ import (
 
     . "github.com/onsi/ginkgo"
     . "github.com/onsi/gomega"
-    "github.com/reifcode/gotcha"
+    "github.com/ruggi/gotcha"
 )
 
 func TestExample(t *testing.T) {
